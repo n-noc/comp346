@@ -167,17 +167,13 @@ public class Server extends Thread{
      * @param accNumber
      */
      public int findAccount(String accNumber)
-     {
-         int i = 0;
-         
-         /* Find account */
-         while ( !(account[i].getAccountNumber().equals(accNumber)))
-             i++;
-         if (i == getNumberOfAccounts())
-             return -1;
-         else
-             return i;
-     }
+    {
+        int i = 0;
+        while (i < getNumberOfAccounts() && !account[i].getAccountNumber().equals(accNumber)) {
+            i++;
+        }
+        return (i == getNumberOfAccounts()) ? -1 : i;
+    }
      
      /************************************************************************************************************************************************
   	 * TO DO : if the network input or output buffer is empty then yield the cpu using the Java method Thread.yield(); first try with busy-waiting	 *
@@ -212,6 +208,15 @@ public class Server extends Thread{
         		 objNetwork.transferIn(trans);                              /* Transfer a transaction from the network input buffer */
              
         		 accIndex = findAccount(trans.getAccountNumber());
+                 if (accIndex == -1) {
+    trans.setTransactionError("Account not found");
+    trans.setTransactionStatus("done");
+    while (objNetwork.getOutBufferStatus().equals("full")) {
+        Thread.yield();
+    }
+    objNetwork.transferOut(trans);
+    continue;
+}
         		 /* Process deposit operation */
         		 if (trans.getOperationType().equals("DEPOSIT"))
         		 {

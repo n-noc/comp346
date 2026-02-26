@@ -224,37 +224,25 @@ public class Client extends Thread{
      * @param
      */
     public void run()
-    {   
-    	Transactions transact = new Transactions();
-        Thread sendThread = new Thread(() -> sendTransactions());
-        Thread receiveThread = new Thread(() -> receiveTransactions(transact));
-    	long sendClientStartTime, sendClientEndTime, receiveClientStartTime, receiveClientEndTime;
+{
+    long start, end;
 
-        //time has to run before the thread starts
-        sendClientStartTime = System.currentTimeMillis();
-        sendThread.start();
+    if (clientOperation.equals("sending")) {
+        start = System.currentTimeMillis();
+        sendTransactions();
+        end = System.currentTimeMillis();
+        System.out.println("\n Client sending time: " + (end - start) + " milliseconds");
 
-
-        receiveClientStartTime = System.currentTimeMillis();
-        receiveThread.start();
-        
-         
-
-        try {
-            sendThread.join();
-            sendClientEndTime = System.currentTimeMillis();
-            System.out.println("\n Client sending time: " + (sendClientEndTime - sendClientStartTime) + " milliseconds");
-
-            receiveThread.join();
-            receiveClientEndTime = System.currentTimeMillis();
-            System.out.println("\n Client receiving time: " + (receiveClientEndTime - receiveClientStartTime) + " milliseconds");
-
-            // need to call disconnect to avoid infinte loop
-            objNetwork.disconnect(objNetwork.getClientIP());
-
-        } catch (InterruptedException e) {
-           Thread.currentThread().interrupt();
-        }
-	/* Implement the code for the run method */
+        // ✅ Important: sender disconnects so server/network can terminate
+        objNetwork.disconnect(objNetwork.getClientIP());
     }
+    else if (clientOperation.equals("receiving")) {
+        Transactions transact = new Transactions();
+
+        start = System.currentTimeMillis();
+        receiveTransactions(transact);
+        end = System.currentTimeMillis();
+        System.out.println("\n Client receiving time: " + (end - start) + " milliseconds");
+    }
+}
 }

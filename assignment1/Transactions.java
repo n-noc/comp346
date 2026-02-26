@@ -161,18 +161,19 @@ public class Transactions {
      * @param transStatus
      */
      public void setTransactionStatus(String transStatus)
-     { 
-         transactionError = transStatus;
-     }
+    { 
+        transactionStatus = transStatus;  // ✅ correct
+    }
      
     /**
      *  Create a String representation based on the Transactions Object
      * 
      * @return String representation
      */
-    public String toString() 
-    {
-    	return ("\n Account number " + getAccountNumber() + " Account Balance " + getTransactionBalance() + " Message " + getTransactionError());
+    public String toString() {
+        return ("\n Account number " + getAccountNumber()
+                + " Account Balance " + getTransactionBalance()
+                + " Message " + getTransactionError());
     }
 
 }
